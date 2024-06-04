@@ -28,6 +28,7 @@
 					type="text"
 					name="title"
 					id="title"
+					rows="5"
 					placeholder="Titre"
 					v-model="title"
 				/>
@@ -35,13 +36,13 @@
 				<IconSelector @icon-set="setIcon" />
 			</div>
 
-			<input
-				type="text"
+			<textarea
 				name="note"
-				id="note"
+				class="note"
 				placeholder="note"
 				v-model="note"
-			/>
+			>
+			</textarea>
 		</header>
 
 		<Divider direction="horizontal" />
@@ -60,8 +61,6 @@
 					class="tasksform__list__item__input"
 				/>
 			</li>
-
-			<li><CheckBox /></li>
 		</ul>
 
 		<footer class="tasksform__footer">
@@ -81,7 +80,6 @@
 					size="40"
 				/>
 			</label>
-			<!-- </div> -->
 		</footer>
 	</form>
 </template>
@@ -122,6 +120,19 @@
 
 					width: 100%;
 				}
+			}
+
+			.note {
+				background: $bg;
+
+				border: solid 1px $bg-2;
+				border-radius: 5px;
+
+				height: 2.8rem;
+				max-height: 10.4rem;
+				line-height: 1.5;
+
+				resize: vertical;
 			}
 		}
 
