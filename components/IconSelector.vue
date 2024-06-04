@@ -37,7 +37,7 @@
 				class="icon__selector__item"
 				@click="changeSelectedIcon(icon)"
 			>
-				<Icon :name="icon" size="24" />
+				<Icon class="icon__button" :name="icon" size="24" />
 			</li>
 		</ul>
 	</div>
@@ -48,6 +48,12 @@
 		&__container {
 			position: relative;
 			user-select: none;
+		}
+
+		&__button {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 
 		&__button__wrapper {
