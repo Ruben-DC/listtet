@@ -18,6 +18,7 @@
 
 <style lang="scss" scoped>
 	header {
+		z-index: 10000;
 		position: sticky;
 		top: 0;
 		left: 0;
@@ -27,8 +28,7 @@
 		justify-content: space-between;
 		align-items: center;
 
-		background: 00000010;
-		backdrop-filter: blur(140px);
+		backdrop-filter: blur(10px);
 
 		.name {
 			display: flex;
