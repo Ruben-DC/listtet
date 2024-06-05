@@ -1,22 +1,97 @@
 <script setup lang="ts">
+	import type { Todo } from '~/types';
+
 	let title = ref('');
 	let icon = ref('');
 	let note = ref('');
-	let checked = ref(false);
-	let itemList: Ref<string[]> = ref([]);
+	let itemList: Ref<Todo[]> = ref([
+		{
+			isChecked: false,
+			content: '',
+		},
+	]);
 
 	const setIcon = (selectedIcon: string) => {
 		icon.value = selectedIcon;
-		console.log(icon.value);
 	};
 
 	const addList = () => {
-		console.log(title.value, icon.value, note.value, itemList.value);
+		resetForm();
+	};
 
+	const addRow = async (content: string) => {
+		if (content.trim() === '') {
+			return;
+		}
+
+		itemList.value.push({
+			isChecked: false,
+			content: '',
+		});
+
+		await nextTick();
+		focusLastInput();
+	};
+
+	const deleteRow = async (index: number) => {
+		if (itemList.value.length > 1) {
+			itemList.value.splice(index, 1);
+		}
+
+		await nextTick();
+		focusPreviousInput(index);
+	};
+
+	const handleKeydown = (
+		event: KeyboardEvent,
+		content: string,
+		index: number
+	) => {
+		if (event.key === 'Enter' && event.ctrlKey) {
+			event.preventDefault();
+			addList();
+		} else if (event.key === 'Enter') {
+			event.preventDefault();
+			addRow(content);
+		} else if (event.key === 'Backspace' && content.trim() === '') {
+			event.preventDefault();
+			deleteRow(index);
+		}
+	};
+
+	const focusLastInput = () => {
+		const allInputs = document.querySelectorAll(
+			'.tasksform__list__item__input'
+		);
+		const lastInput = allInputs[allInputs.length - 1];
+
+		if (lastInput) {
+			(lastInput as HTMLInputElement).focus();
+		}
+	};
+
+	const focusPreviousInput = (index: number) => {
+		const allInputs = document.querySelectorAll(
+			'.tasksform__list__item__input'
+		);
+
+		const previousInput = allInputs[index - 1];
+		if (previousInput) {
+			(previousInput as HTMLInputElement).focus();
+		}
+	};
+
+	const resetForm = () => {
 		title.value = '';
 		icon.value = '';
 		note.value = '';
-		itemList.value = [];
+
+		itemList.value = [
+			{
+				isChecked: false,
+				content: '',
+			},
+		];
 	};
 </script>
 
@@ -36,35 +111,46 @@
 				<IconSelector @icon-set="setIcon" />
 			</div>
 
-			<textarea
-				name="note"
-				class="note"
-				placeholder="note"
-				v-model="note"
-			>
-			</textarea>
+			<input type="text" name="note" placeholder="note" v-model="note" />
 		</header>
 
 		<Divider direction="horizontal" />
 
 		<ul class="tasksform__list">
-			<li class="tasksform__list__item">
-				<CheckBox
-					class="tasksform__list__item__checkbox"
-					v-model="checked"
-					@click="console.log(checked)"
-				/>
+			<li
+				v-for="(item, index) in itemList"
+				class="tasksform__list__item"
+				:key="index"
+			>
+				<input type="checkbox" v-model="item.isChecked" />
 
 				<input
 					type="text"
-					placeholder="Ajouter un item"
+					placeholder="Ajouter un item..."
 					class="tasksform__list__item__input"
+					v-model="item.content"
+					@keydown="handleKeydown($event, item.content, index)"
 				/>
+
+				<div class="tasksform__list__item__actions">
+					<div
+						class="tasksform__list__item__actions__button"
+						@click="addRow(item.content)"
+					>
+						<Icon name="lucide:plus" />
+					</div>
+
+					<div
+						class="tasksform__list__item__actions__button"
+						@click="deleteRow(index)"
+					>
+						<Icon name="lucide:trash" />
+					</div>
+				</div>
 			</li>
 		</ul>
 
 		<footer class="tasksform__footer">
-			<!-- <div class="pentagon"> -->
 			<input
 				type="submit"
 				class="tasksform__submit--button"
@@ -128,8 +214,7 @@
 				border: solid 1px $bg-2;
 				border-radius: 5px;
 
-				height: 2.8rem;
-				max-height: 10.4rem;
+				height: 8rem;
 				line-height: 1.5;
 
 				resize: vertical;
@@ -148,8 +233,37 @@
 
 				width: 100%;
 
+				&:hover {
+					.tasksform__list__item__actions {
+						opacity: 1;
+					}
+				}
+
 				&__input {
 					width: 100%;
+				}
+
+				&__actions {
+					display: flex;
+					gap: 10px;
+
+					opacity: 0;
+
+					transition: opacity 0.2s ease-out;
+
+					&__button {
+						background: $bg-2;
+						border-radius: 3px;
+						padding: 5px;
+
+						.icon {
+							box-sizing: border-box;
+						}
+
+						&:hover {
+							cursor: pointer;
+						}
+					}
 				}
 			}
 		}
@@ -163,7 +277,6 @@
 			display: flex;
 			justify-content: center;
 
-			// background: red;
 			width: 100%;
 			height: 40px;
 		}
