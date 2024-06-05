@@ -67,8 +67,13 @@
 
 			background: $bg-2;
 
+			transition: all 0.2s ease-in;
+
 			&:hover {
 				cursor: pointer;
+
+				transition: all 0.2s ease-out;
+				scale: 1.05;
 			}
 		}
 
@@ -101,6 +106,9 @@
 
 				&:hover {
 					cursor: pointer;
+
+					transition: all 0.2s ease-out;
+					scale: 1.05;
 				}
 			}
 		}
