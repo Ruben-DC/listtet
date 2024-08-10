@@ -15,10 +15,9 @@
 		icon.value = selectedIcon;
 	};
 
-	const addList = () => {
-		resetForm();
-	};
+	const updateList = (index: number) => {};
 
+	// à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
 	const addRow = async (content: string) => {
 		if (content.trim() === '') {
 			return;
@@ -49,7 +48,7 @@
 	) => {
 		if (event.key === 'Enter' && event.ctrlKey) {
 			event.preventDefault();
-			addList();
+			// updateList();
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
 			addRow(content);
@@ -59,6 +58,7 @@
 		}
 	};
 
+	// à revoir. Focus le last input de la dernière liste. Il faudrait se baser sur un id de liste.
 	const focusLastInput = () => {
 		const allInputs = document.querySelectorAll(
 			'.todolist__list__item__input'
@@ -81,18 +81,7 @@
 		}
 	};
 
-	const resetForm = () => {
-		title.value = '';
-		icon.value = '';
-		note.value = '';
-
-		itemList.value = [
-			{
-				isChecked: false,
-				content: '',
-			},
-		];
-	};
+	const deleteList = (index: number) => {};
 </script>
 
 <template>
@@ -144,7 +133,7 @@
 						class="todolist__list__item__actions__button"
 						@click="deleteRow(index)"
 					>
-						<Icon name="lucide:trash" />
+						<Icon name="lucide:trash" @click="deleteList" />
 					</div>
 				</div>
 			</li>
@@ -155,7 +144,7 @@
 				<li
 					class="todolist__actions__button todolist__actions__button--delete"
 				>
-					<Icon class="icon" name="lucide:trash-2" size="25" />
+					<Icon class="icon" name="lucide:trash-2" size="20" />
 				</li>
 			</ul>
 		</footer>
@@ -172,6 +161,7 @@
 
 		max-width: 505px;
 		width: 100%;
+		height: fit-content;
 
 		padding: 60px;
 
@@ -285,24 +275,25 @@
 			border-radius: 25px;
 			background: $bg;
 
-			// &--delete {
-			// 	display: flex;
-			// 	justify-content: center;
-			// 	align-items: center;
-
-			// 	width: 50px;
-
-			// 	background: $bg;
-			// 	color: $accent;
-
-			// 	&:hover {
-			// 		cursor: pointer;
-			// 	}
-			// }
-
 			&__button {
 				&:hover {
 					cursor: pointer;
+				}
+
+				&--delete {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+
+					width: 50px;
+
+					background: $bg;
+					// color: $accent;
+
+					&:hover {
+						cursor: pointer;
+						color: $accent;
+					}
 				}
 			}
 		}
