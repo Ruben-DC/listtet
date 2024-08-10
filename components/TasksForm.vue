@@ -19,6 +19,7 @@
 		resetForm();
 	};
 
+	// à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
 	const addRow = async (content: string) => {
 		if (content.trim() === '') {
 			return;
@@ -180,6 +181,7 @@
 
 		max-width: 505px;
 		width: 100%;
+		height: fit-content;
 
 		padding: 60px;
 
