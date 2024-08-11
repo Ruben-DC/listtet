@@ -4,7 +4,10 @@ export const useAllTodosStore = defineStore('todos', () => {
 	const allTodosLists: Ref<TodoList[]> = ref([]);
 
 	const addTodoList = (todoList: TodoList) => {
+		// console.log(todoList);
+
 		allTodosLists.value.push(todoList);
+		console.log(allTodosLists);
 	};
 
 	const deleteTodoList = (todoListId: number) => {
@@ -13,5 +16,7 @@ export const useAllTodosStore = defineStore('todos', () => {
 
 	const updateTodoList = () => {};
 
-	const getRandomId = () => {};
+	const generateRandomId = () => Math.floor(Math.random() * 10000) + 1;
+
+	return { addTodoList, deleteTodoList, updateTodoList, generateRandomId };
 });
