@@ -1,21 +1,38 @@
 <script setup lang="ts">
-	import type { Todo } from '~/types';
+	import type { TodoList } from '~/types';
+	import IconSelector from './IconSelector.vue';
 
-	let title = ref('');
-	let icon = ref('');
-	let note = ref('');
-	let itemList: Ref<Todo[]> = ref([
-		{
-			isChecked: false,
-			content: '',
-		},
-	]);
+	const todoList: Ref<TodoList> = ref({
+		id: 0,
+		date: new Date(),
+		title: '',
+		icon: '',
+		note: '',
+		itemList: [
+			{
+				isChecked: false,
+				content: '',
+			},
+		],
+	});
 
+	const allTodosStore = useAllTodosStore();
+
+	const iconSelectorRef: Ref<InstanceType<typeof IconSelector> | null> =
+		ref(null);
 	const setIcon = (selectedIcon: string) => {
-		icon.value = selectedIcon;
+		todoList.value.icon = selectedIcon;
 	};
 
+	if (iconSelectorRef.value) {
+		iconSelectorRef.value.resetSelector();
+	}
+
 	const addList = () => {
+		todoList.value.id = allTodosStore.generateRandomId();
+		todoList.value.date = new Date();
+		allTodosStore.addTodoList(todoList.value);
+
 		resetForm();
 	};
 
@@ -25,7 +42,7 @@
 			return;
 		}
 
-		itemList.value.push({
+		todoList.value.itemList.push({
 			isChecked: false,
 			content: '',
 		});
@@ -35,8 +52,8 @@
 	};
 
 	const deleteRow = async (index: number) => {
-		if (itemList.value.length > 1) {
-			itemList.value.splice(index, 1);
+		if (todoList.value.itemList.length > 1) {
+			todoList.value.itemList.splice(index, 1);
 		}
 
 		await nextTick();
@@ -83,16 +100,23 @@
 	};
 
 	const resetForm = () => {
-		title.value = '';
-		icon.value = '';
-		note.value = '';
+		todoList.value = {
+			id: 0,
+			date: new Date(),
+			title: '',
+			icon: '',
+			note: '',
+			itemList: [
+				{
+					isChecked: false,
+					content: '',
+				},
+			],
+		};
 
-		itemList.value = [
-			{
-				isChecked: false,
-				content: '',
-			},
-		];
+		if (iconSelectorRef.value) {
+			iconSelectorRef.value.resetSelector();
+		}
 	};
 </script>
 
@@ -106,20 +130,25 @@
 					id="title"
 					rows="5"
 					placeholder="Titre"
-					v-model="title"
+					v-model="todoList.title"
 				/>
 
-				<IconSelector @icon-set="setIcon" />
+				<IconSelector @icon-set="setIcon" ref="iconSelectorRef" />
 			</div>
 
-			<input type="text" name="note" placeholder="note" v-model="note" />
+			<input
+				type="text"
+				name="note"
+				placeholder="note"
+				v-model="todoList.note"
+			/>
 		</header>
 
 		<Divider direction="horizontal" />
 
 		<ul class="tasksform__list">
 			<li
-				v-for="(item, index) in itemList"
+				v-for="(item, index) in todoList.itemList"
 				class="tasksform__list__item"
 				:key="index"
 			>
