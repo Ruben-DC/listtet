@@ -20,9 +20,16 @@
 		emit('iconSet', selectedIcon.value);
 	};
 
+	const resetSelector = () => {
+		selectedIcon.value = '🚀';
+		emit('iconSet', selectedIcon.value);
+	};
+
 	onMounted(() => {
 		emit('iconSet', selectedIcon.value);
 	});
+
+	defineExpose({ resetSelector });
 </script>
 
 <template>
@@ -34,6 +41,7 @@
 		<ul ref="selector" class="icon__selector" v-if="isSelectorOpen">
 			<li
 				v-for="icon in iconsList"
+				:key="icon"
 				class="icon__selector__item"
 				@click="changeSelectedIcon(icon)"
 			>
