@@ -1,92 +1,105 @@
 <script setup lang="ts">
-	import type { Todo } from '~/types';
+	import type { Todo, TodoList } from '~/types';
 
-	let title = ref('');
-	let icon = ref('');
-	let note = ref('');
-	let itemList: Ref<Todo[]> = ref([
-		{
-			isChecked: false,
-			content: '',
-		},
-	]);
+	const props = defineProps<{
+		todoList: TodoList;
+	}>();
 
-	const setIcon = (selectedIcon: string) => {
-		icon.value = selectedIcon;
+	// let title = ref('');
+	// let icon = ref('');
+	// let note = ref('');
+	// let itemList: Ref<Todo[]> = ref([
+	// 	{
+	// 		isChecked: false,
+	// 		content: '',
+	// 	},
+	// ]);
+
+	// const setIcon = (selectedIcon: string) => {
+	// 	icon.value = selectedIcon;
+	// };
+
+	// const updateList = (index: number) => {};
+
+	// // à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
+	// const addRow = async (content: string) => {
+	// 	if (content.trim() === '') {
+	// 		return;
+	// 	}
+
+	// 	itemList.value.push({
+	// 		isChecked: false,
+	// 		content: '',
+	// 	});
+
+	// 	await nextTick();
+	// 	focusLastInput();
+	// };
+
+	// const deleteRow = async (index: number) => {
+	// 	if (itemList.value.length > 1) {
+	// 		itemList.value.splice(index, 1);
+	// 	}
+
+	// 	await nextTick();
+	// 	focusPreviousInput(index);
+	// };
+
+	// const handleKeydown = (
+	// 	event: KeyboardEvent,
+	// 	content: string,
+	// 	index: number
+	// ) => {
+	// 	if (event.key === 'Enter' && event.ctrlKey) {
+	// 		event.preventDefault();
+	// 		// updateList();
+	// 	} else if (event.key === 'Enter') {
+	// 		event.preventDefault();
+	// 		addRow(content);
+	// 	} else if (event.key === 'Backspace' && content.trim() === '') {
+	// 		event.preventDefault();
+	// 		deleteRow(index);
+	// 	}
+	// };
+
+	// // à revoir. Focus le last input de la dernière liste. Il faudrait se baser sur un id de liste.
+	// const focusLastInput = () => {
+	// 	const allInputs = document.querySelectorAll(
+	// 		'.todolist__list__item__input'
+	// 	);
+	// 	const lastInput = allInputs[allInputs.length - 1];
+
+	// 	if (lastInput) {
+	// 		(lastInput as HTMLInputElement).focus();
+	// 	}
+	// };
+
+	// const focusPreviousInput = (index: number) => {
+	// 	const allInputs = document.querySelectorAll(
+	// 		'.todolist__list__item__input'
+	// 	);
+
+	// 	const previousInput = allInputs[index - 1];
+	// 	if (previousInput) {
+	// 		(previousInput as HTMLInputElement).focus();
+	// 	}
+	// };
+
+	// const deleteList = (index: number) => {};
+	const formatDate = (date: Date) => {
+		const day = date.getDate().toString().padStart(2, '0');
+		const month = (date.getMonth() + 1).toString().padStart(2, '0');
+		const year = date.getFullYear();
+
+		return `${day}/${month}/${year}`;
 	};
-
-	const updateList = (index: number) => {};
-
-	// à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
-	const addRow = async (content: string) => {
-		if (content.trim() === '') {
-			return;
-		}
-
-		itemList.value.push({
-			isChecked: false,
-			content: '',
-		});
-
-		await nextTick();
-		focusLastInput();
-	};
-
-	const deleteRow = async (index: number) => {
-		if (itemList.value.length > 1) {
-			itemList.value.splice(index, 1);
-		}
-
-		await nextTick();
-		focusPreviousInput(index);
-	};
-
-	const handleKeydown = (
-		event: KeyboardEvent,
-		content: string,
-		index: number
-	) => {
-		if (event.key === 'Enter' && event.ctrlKey) {
-			event.preventDefault();
-			// updateList();
-		} else if (event.key === 'Enter') {
-			event.preventDefault();
-			addRow(content);
-		} else if (event.key === 'Backspace' && content.trim() === '') {
-			event.preventDefault();
-			deleteRow(index);
-		}
-	};
-
-	// à revoir. Focus le last input de la dernière liste. Il faudrait se baser sur un id de liste.
-	const focusLastInput = () => {
-		const allInputs = document.querySelectorAll(
-			'.todolist__list__item__input'
-		);
-		const lastInput = allInputs[allInputs.length - 1];
-
-		if (lastInput) {
-			(lastInput as HTMLInputElement).focus();
-		}
-	};
-
-	const focusPreviousInput = (index: number) => {
-		const allInputs = document.querySelectorAll(
-			'.todolist__list__item__input'
-		);
-
-		const previousInput = allInputs[index - 1];
-		if (previousInput) {
-			(previousInput as HTMLInputElement).focus();
-		}
-	};
-
-	const deleteList = (index: number) => {};
 </script>
 
 <template>
 	<form class="todolist" @submit.prevent="addList">
 		<header class="todolist__header">
+			<p class="date">{{ formatDate(todoList.date) }}</p>
+
 			<div class="icon-container">
 				<input
 					type="text"
@@ -94,20 +107,25 @@
 					id="title"
 					rows="5"
 					placeholder="Titre"
-					v-model="title"
+					v-model="todoList.title"
 				/>
 
 				<IconSelector @icon-set="setIcon" />
 			</div>
 
-			<input type="text" name="note" placeholder="note" v-model="note" />
+			<input
+				type="text"
+				name="note"
+				placeholder="note"
+				v-model="todoList.note"
+			/>
 		</header>
 
 		<Divider direction="horizontal" />
 
 		<ul class="todolist__list">
 			<li
-				v-for="(item, index) in itemList"
+				v-for="(item, index) in todoList.itemList"
 				class="todolist__list__item"
 				:key="index"
 			>

@@ -1,10 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+	const allTodosStore = useAllTodosStore();
+</script>
 
 <template>
 	<div class="feed">
 		<TasksForm />
 
-		<TodoList />
+		<TodoList
+			v-for="todo in allTodosStore.allTodosLists"
+			:todo-list="todo"
+			:key="todo.id"
+		/>
 	</div>
 </template>
 
