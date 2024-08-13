@@ -2,7 +2,15 @@
 	const emit = defineEmits(['iconSet']);
 
 	const iconsList = ['🚀', '🔨', '👾', '🚨', '🖋️', '🐵', '💯', '🥸', '⛄️'];
-	let selectedIcon: Ref<string> = ref('🚀');
+
+	const props = defineProps({
+		icon: {
+			default: '🚀',
+			required: false,
+		},
+	});
+
+	let selectedIcon = toRef(props.icon);
 
 	const selector = ref();
 	let isSelectorOpen = ref(false);
