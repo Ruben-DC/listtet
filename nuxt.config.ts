@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: { enabled: true },
-	modules: ['@nuxtjs/google-fonts', '@pinia/nuxt', 'nuxt-icon', "@vueuse/nuxt"],
+	modules: [
+        '@nuxtjs/google-fonts',
+        '@pinia/nuxt',
+        'nuxt-icon',
+        "@vueuse/nuxt",
+        "@pinia-plugin-persistedstate/nuxt"
+    ],
 
 	googleFonts: {
 		families: {

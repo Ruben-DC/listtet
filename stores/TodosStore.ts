@@ -1,25 +1,51 @@
 import type { TodoList } from '~/types';
 
-export const useAllTodosStore = defineStore('todos', () => {
-	const allTodosLists: Ref<TodoList[]> = ref([]);
+function deserialize(value: string): any {
+	return JSON.parse(value, (key, val) => {
+		if (typeof val === 'string' && !isNaN(Date.parse(val))) {
+			return new Date(val);
+		}
+		return val;
+	});
+}
 
-	const addTodoList = (todoList: TodoList) => {
-		allTodosLists.value.push(todoList);
-	};
+export const useAllTodosStore = defineStore(
+	'todos',
+	() => {
+		const allTodosLists: Ref<TodoList[]> = ref([]);
 
-	const deleteTodoList = (todoListId: number) => {
-		allTodosLists.value.splice(todoListId, 1);
-	};
+		const addTodoList = (todoList: TodoList) => {
+			allTodosLists.value.push(todoList);
+		};
 
-	const updateTodoList = () => {};
+		const deleteTodoList = (todoListId: number) => {
+			const todoListToRemove = allTodosLists.value.findIndex(
+				(item) => item.id === todoListId
+			);
 
-	const generateRandomId = () => Math.floor(Math.random() * 10000) + 1;
+			allTodosLists.value.splice(todoListToRemove, 1);
+		};
 
-	return {
-		allTodosLists,
-		addTodoList,
-		deleteTodoList,
-		updateTodoList,
-		generateRandomId,
-	};
-});
+		const updateTodoList = () => {};
+
+		const generateRandomId = () => Math.floor(Math.random() * 1000000) + 1;
+
+		return {
+			allTodosLists,
+			addTodoList,
+			deleteTodoList,
+			updateTodoList,
+			generateRandomId,
+		};
+	},
+	{
+		persist: {
+			paths: ['allTodosLists'],
+			key: 'AllTodos',
+			serializer: {
+				deserialize: deserialize,
+				serialize: JSON.stringify,
+			},
+		},
+	}
+);
