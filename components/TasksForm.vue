@@ -16,10 +16,9 @@
 		],
 	});
 
-	const allTodosStore = useAllTodosStore();
-
 	const iconSelectorRef: Ref<InstanceType<typeof IconSelector> | null> =
 		ref(null);
+
 	const setIcon = (selectedIcon: string) => {
 		todoList.value.icon = selectedIcon;
 	};
@@ -27,6 +26,8 @@
 	if (iconSelectorRef.value) {
 		iconSelectorRef.value.resetSelector();
 	}
+
+	const allTodosStore = useAllTodosStore();
 
 	const addList = () => {
 		todoList.value.id = allTodosStore.generateRandomId();
