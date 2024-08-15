@@ -13,25 +13,27 @@
 
 	const allTodosStore = useAllTodosStore();
 
-	const updateList = (index: number) => {};
-
 	const deleteList = (id: number) => {
 		allTodosStore.deleteTodoList(id);
 	};
 
-	// à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
-	const addRow = async (content: string) => {
+	const addRow = async (content: string, index: number) => {
 		if (content.trim() === '') {
+			return;
+		} else if (
+			todoList.value.itemList[index + 1] &&
+			todoList.value.itemList[index + 1].content.trim() === ''
+		) {
 			return;
 		}
 
-		todoList.value.itemList.push({
+		todoList.value.itemList.splice(index + 1, 0, {
 			isChecked: false,
 			content: '',
 		});
 
 		await nextTick();
-		focusLastInput();
+		focusNextInput(index);
 	};
 
 	const deleteRow = async (index: number) => {
@@ -43,6 +45,49 @@
 		focusPreviousInput(index);
 	};
 
+	// Focus methods
+	const focusNextInput = (index: number) => {
+		const currentList = document.querySelector(
+			`.todo-list__${todoList.value.id}`
+		);
+
+		if (currentList) {
+			const allInputs = currentList.querySelectorAll(
+				'.todolist__list__item__input'
+			);
+
+			const nextInput = allInputs[index + 1];
+
+			if (nextInput) {
+				(nextInput as HTMLInputElement).focus();
+			}
+		}
+	};
+
+	const focusPreviousInput = (index: number) => {
+		const currentList = document.querySelector(
+			`.todo-list__${todoList.value.id}`
+		);
+
+		if (currentList) {
+			const allInputs: Array<HTMLInputElement> = Array.from(
+				currentList.querySelectorAll('.todolist__list__item__input')
+			);
+
+			const previousInput = allInputs[index - 1];
+
+			if (previousInput) {
+				const previousInputLength = previousInput.value.length;
+				(previousInput as HTMLInputElement).setSelectionRange(
+					previousInputLength,
+					previousInputLength
+				);
+				(previousInput as HTMLInputElement).focus();
+			}
+		}
+	};
+
+	// Handle keys
 	const handleKeydown = (
 		event: KeyboardEvent,
 		content: string,
@@ -50,40 +95,15 @@
 	) => {
 		if (event.key === 'Enter' && event.ctrlKey) {
 			event.preventDefault();
-			// updateList();
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
-			addRow(content);
+			addRow(content, index);
 		} else if (event.key === 'Backspace' && content.trim() === '') {
 			event.preventDefault();
 			deleteRow(index);
 		}
 	};
 
-	// // à revoir. Focus le last input de la dernière liste. Il faudrait se baser sur un id de liste.
-	const focusLastInput = () => {
-		const allInputs = document.querySelectorAll(
-			'.todolist__list__item__input'
-		);
-		const lastInput = allInputs[allInputs.length - 1];
-
-		if (lastInput) {
-			(lastInput as HTMLInputElement).focus();
-		}
-	};
-
-	const focusPreviousInput = (index: number) => {
-		const allInputs = document.querySelectorAll(
-			'.todolist__list__item__input'
-		);
-
-		const previousInput = allInputs[index - 1];
-		if (previousInput) {
-			(previousInput as HTMLInputElement).focus();
-		}
-	};
-
-	// const deleteList = (index: number) => {};
 	const formatDate = (date: Date) => {
 		const day = date.getDate().toString().padStart(2, '0');
 		const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -94,7 +114,7 @@
 </script>
 
 <template>
-	<div class="todolist">
+	<div class="todolist" :class="`todo-list__${todoList.id}`">
 		<header class="todolist__header">
 			<p class="date">{{ formatDate(todoList.date) }}</p>
 
@@ -140,7 +160,7 @@
 				<div class="todolist__list__item__actions">
 					<div
 						class="todolist__list__item__actions__button"
-						@click="addRow(item.content)"
+						@click="addRow(item.content, index)"
 					>
 						<Icon name="lucide:plus" />
 					</div>
