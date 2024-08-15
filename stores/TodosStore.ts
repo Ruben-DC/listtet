@@ -26,15 +26,12 @@ export const useAllTodosStore = defineStore(
 			allTodosLists.value.splice(todoListToRemove, 1);
 		};
 
-		const updateTodoList = () => {};
-
 		const generateRandomId = () => Math.floor(Math.random() * 1000000) + 1;
 
 		return {
 			allTodosLists,
 			addTodoList,
 			deleteTodoList,
-			updateTodoList,
 			generateRandomId,
 		};
 	},
