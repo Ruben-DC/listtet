@@ -1,4 +1,16 @@
 <script setup lang="ts">
+	useHead({
+		title: 'Listtet',
+		meta: [{ name: 'description', content: 'My amazing site.' }],
+		link: [
+			{
+				rel: 'icon',
+				type: 'image/png',
+				href: './icon.png',
+			},
+		],
+	});
+
 	const allTodosStore = useAllTodosStore();
 </script>
 
