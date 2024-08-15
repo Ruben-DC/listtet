@@ -37,19 +37,23 @@
 		resetForm();
 	};
 
-	// à revoir. Ajoute un item à la fin de la liste, et pas après l'item sur lequel on a voulu ajouter un élément à la suite. Permet d'ajouter des items vides et pas un seul.
-	const addRow = async (content: string) => {
+	const addRow = async (content: string, index: number) => {
 		if (content.trim() === '') {
+			return;
+		} else if (
+			todoList.value.itemList[index + 1] &&
+			todoList.value.itemList[index + 1].content.trim() === ''
+		) {
 			return;
 		}
 
-		todoList.value.itemList.push({
+		todoList.value.itemList.splice(index + 1, 0, {
 			isChecked: false,
 			content: '',
 		});
 
 		await nextTick();
-		focusLastInput();
+		focusNextInput(index);
 	};
 
 	const deleteRow = async (index: number) => {
@@ -71,21 +75,22 @@
 			addList();
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
-			addRow(content);
+			addRow(content, index);
 		} else if (event.key === 'Backspace' && content.trim() === '') {
 			event.preventDefault();
 			deleteRow(index);
 		}
 	};
 
-	const focusLastInput = () => {
+	const focusNextInput = (index: number) => {
 		const allInputs = document.querySelectorAll(
 			'.tasksform__list__item__input'
 		);
-		const lastInput = allInputs[allInputs.length - 1];
 
-		if (lastInput) {
-			(lastInput as HTMLInputElement).focus();
+		const nextInput = allInputs[index + 1];
+
+		if (nextInput) {
+			(nextInput as HTMLInputElement).focus();
 		}
 	};
 
@@ -95,6 +100,7 @@
 		);
 
 		const previousInput = allInputs[index - 1];
+
 		if (previousInput) {
 			(previousInput as HTMLInputElement).focus();
 		}
@@ -166,7 +172,7 @@
 				<div class="tasksform__list__item__actions">
 					<div
 						class="tasksform__list__item__actions__button"
-						@click="addRow(item.content)"
+						@click="addRow(item.content, index)"
 					>
 						<Icon name="lucide:plus" />
 					</div>
